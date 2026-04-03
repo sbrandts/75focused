@@ -3,24 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wedding Tracker</title>
+    <title>75 Focused Wedding Readiness Tracker</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti/dist/confetti.browser.min.js"></script>
 </head>
-<body>
-    <h1>Wedding Tracker</h1>
-    <div>
-        <h2>Track your weddings</h2>
-        <form>
-            <label for="name">Couple's Name:</label>
-            <input type="text" id="name" name="name" required>
-            <br>
-            <label for="date">Wedding Date:</label>
-            <input type="date" id="date" name="date" required>
-            <br>
-            <label for="venue">Venue:</label>
-            <input type="text" id="venue" name="venue" required>
-            <br>
-            <input type="submit" value="Track Wedding">
-        </form>
+<body class="bg-gray-100 text-gray-900">
+    <div class="container mx-auto p-4">
+        <h1 class="text-2xl font-bold mb-4">75 Focused Wedding Readiness Tracker</h1>
+        <div class="mb-4">
+            <h2 class="text-xl font-semibold">Task Tracking</h2>
+            <ul id="task-list" class="list-disc pl-5">
+                <li><input type="checkbox" /> Book Venue</li>
+                <li><input type="checkbox" /> Send Invitations</li>
+                <li><input type="checkbox" /> Arrange Catering</li>
+                <li><input type="checkbox" /> Hire Photographer</li>
+            </ul>
+        </div>
+        <div class="mb-4">
+            <h2 class="text-xl font-semibold">Penalty Logging</h2>
+            <p>Log any penalties that occur for late tasks.</p>
+            <input type="text" id="penalty-log" placeholder="Enter penalty details" class="border rounded p-2" />
+        </div>
+        <div class="mb-4">
+            <h2 class="text-xl font-semibold">Weight Tracking</h2>
+            <input type="number" id="weight" placeholder="Enter weight" class="border rounded p-2" />
+            <button id="log-weight" class="bg-blue-500 text-white rounded p-2 ml-2">Log Weight</button>
+        </div>
+        <button id="celebrate" class="bg-green-500 text-white rounded p-2">Celebrate!</button>
     </div>
+    <script>
+        const celebrateButton = document.getElementById('celebrate');
+        celebrateButton.addEventListener('click', () => {
+            confetti();
+            alert('Congratulations on your wedding journey!');
+        });
+    </script>
 </body>
 </html>
