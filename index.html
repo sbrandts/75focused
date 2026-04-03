@@ -2,41 +2,472 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>75 Focused Wedding Readiness Tracker</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti/dist/confetti.browser.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>75 Focused: Wedding Readiness Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        body { 
+            background-color: #09090b; 
+            color: #fafafa;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            -webkit-tap-highlight-color: transparent;
+            overscroll-behavior-y: contain;
+        }
+        .card { 
+            background: #18181b; 
+            border-radius: 1.25rem; 
+            border: 1px solid #27272a;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4); 
+            position: relative;
+        }
+        .checkbox-custom { 
+            width: 1.75rem; 
+            height: 1.75rem; 
+            border-radius: 0.5rem; 
+            border: 2px solid #3f3f46; 
+            cursor: pointer; 
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
+            background: #27272a;
+        }
+        .checkbox-custom.checked { 
+            background-color: #10b981; 
+            border-color: #10b981; 
+            position: relative; 
+            transform: scale(1.05);
+        }
+        .checkbox-custom.checked::after { 
+            content: '✓'; 
+            color: white; 
+            position: absolute; 
+            left: 50%; 
+            top: 50%; 
+            transform: translate(-50%, -50%); 
+            font-weight: bold; 
+            font-size: 1rem;
+        }
+        .penalty-card { 
+            background: linear-gradient(145deg, #450a0a, #18181b);
+            border: 1px solid #7f1d1d; 
+            overflow: hidden;
+        }
+        
+        /* Hold to Confirm Button */
+        .hold-btn {
+            position: relative;
+            background-color: rgba(220, 38, 38, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #f87171;
+            overflow: hidden;
+            transition: transform 0.1s;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: none; 
+        }
+        .hold-btn:active {
+            transform: scale(0.98);
+        }
+        .hold-progress {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            background-color: rgba(220, 38, 38, 0.5);
+            width: 0%;
+            transition: width 0.1s linear;
+            pointer-events: none;
+        }
+
+        /* Thumbs Up Animation */
+        #thumbs-up-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 100;
+        }
+        .thumbs-up-pop {
+            font-size: 5rem;
+            animation: thumbsUpAnim 0.8s ease-out forwards;
+            opacity: 0;
+        }
+        @keyframes thumbsUpAnim {
+            0% { transform: scale(0.5) translateY(20px); opacity: 0; }
+            30% { transform: scale(1.2) translateY(0); opacity: 1; }
+            100% { transform: scale(1) translateY(-100px); opacity: 0; }
+        }
+        
+        @keyframes pulse-green {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); color: #10b981; }
+            100% { transform: scale(1); }
+        }
+        .success-pulse {
+            animation: pulse-green 0.6s ease-out;
+        }
+    </style>
 </head>
-<body class="bg-gray-100 text-gray-900">
-    <div class="container mx-auto p-4">
-        <h1 class="text-2xl font-bold mb-4">75 Focused Wedding Readiness Tracker</h1>
-        <div class="mb-4">
-            <h2 class="text-xl font-semibold">Task Tracking</h2>
-            <ul id="task-list" class="list-disc pl-5">
-                <li><input type="checkbox" /> Book Venue</li>
-                <li><input type="checkbox" /> Send Invitations</li>
-                <li><input type="checkbox" /> Arrange Catering</li>
-                <li><input type="checkbox" /> Hire Photographer</li>
-            </ul>
-        </div>
-        <div class="mb-4">
-            <h2 class="text-xl font-semibold">Penalty Logging</h2>
-            <p>Log any penalties that occur for late tasks.</p>
-            <input type="text" id="penalty-log" placeholder="Enter penalty details" class="border rounded p-2" />
-        </div>
-        <div class="mb-4">
-            <h2 class="text-xl font-semibold">Weight Tracking</h2>
-            <input type="number" id="weight" placeholder="Enter weight" class="border rounded p-2" />
-            <button id="log-weight" class="bg-blue-500 text-white rounded p-2 ml-2">Log Weight</button>
-        </div>
-        <button id="celebrate" class="bg-green-500 text-white rounded p-2">Celebrate!</button>
+<body class="pb-16 antialiased">
+    <!-- Overlay for Thumbs Up -->
+    <div id="thumbs-up-container"></div>
+
+    <div class="max-w-md mx-auto px-5 pt-10">
+        <!-- Header -->
+        <header class="mb-6 text-center">
+            <h1 class="text-4xl font-extrabold tracking-tight text-white mb-1">75 Focused</h1>
+            <p class="text-zinc-400 font-medium tracking-wide">Wedding Readiness • June 20th</p>
+            
+            <div class="flex justify-center gap-3 mt-5">
+                <div class="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-4 py-1.5 rounded-full font-bold text-[10px] tracking-widest uppercase">
+                    Day <span id="day-counter">--</span>
+                </div>
+                <div id="perfect-days-chip" class="transition-colors duration-300 bg-zinc-800 border border-zinc-700 text-zinc-300 px-4 py-1.5 rounded-full font-bold text-[10px] tracking-widest uppercase">
+                    <span id="perfect-days-count">0</span> Perfect Days
+                </div>
+            </div>
+            
+            <div class="mt-3 text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">
+                Consistency: <span id="consistency-rate" class="text-zinc-300">0%</span>
+            </div>
+        </header>
+
+        <!-- Daily Checklist -->
+        <section class="card p-6 mb-6">
+            <div class="flex justify-between items-end mb-6">
+                <h2 class="text-xl font-bold text-white">Daily Tasks</h2>
+                <span id="current-date" class="text-xs font-bold text-zinc-500 uppercase tracking-tighter"></span>
+            </div>
+            
+            <div id="checklist" class="space-y-1">
+                <div class="flex items-center justify-between py-4 border-b border-zinc-800/50" onclick="toggleTask('morning_movement')">
+                    <div class="pr-4">
+                        <p class="font-bold text-zinc-100 text-sm">Morning Movement</p>
+                        <p class="text-xs text-zinc-500 mt-0.5">50 Push-ups / 150 Abs</p>
+                    </div>
+                    <div class="checkbox-custom flex-shrink-0" id="cb-morning_movement"></div>
+                </div>
+
+                <div class="flex items-center justify-between py-4 border-b border-zinc-800/50" onclick="toggleTask('workout')">
+                    <div class="pr-4">
+                        <p class="font-bold text-zinc-100 text-sm">Daily Workout</p>
+                        <p class="text-xs text-zinc-500 mt-0.5" id="today-workout-desc">30 min minimum</p>
+                    </div>
+                    <div class="checkbox-custom flex-shrink-0" id="cb-workout"></div>
+                </div>
+
+                <div class="flex items-center justify-between py-4 border-b border-zinc-800/50" onclick="toggleTask('nutrition')">
+                    <div class="pr-4">
+                        <p class="font-bold text-zinc-100 text-sm">Clean Fuel Protocol</p>
+                        <p class="text-xs text-zinc-500 mt-0.5">11-7 window • No Junk/Alcohol</p>
+                    </div>
+                    <div class="checkbox-custom flex-shrink-0" id="cb-nutrition"></div>
+                </div>
+
+                <div class="flex items-center justify-between py-4 border-b border-zinc-800/50" onclick="toggleTask('water')">
+                    <div class="pr-4">
+                        <p class="font-bold text-zinc-100 text-sm">Gallon & Green Tea</p>
+                        <p class="text-xs text-zinc-500 mt-0.5">Full hydration goal</p>
+                    </div>
+                    <div class="checkbox-custom flex-shrink-0" id="cb-water"></div>
+                </div>
+
+                <div class="flex items-center justify-between py-4 border-b border-zinc-800/50" onclick="toggleTask('reading')">
+                    <div class="pr-4">
+                        <p class="font-bold text-zinc-100 text-sm">Mental Growth</p>
+                        <p class="text-xs text-zinc-500 mt-0.5">10 pages (No technology)</p>
+                    </div>
+                    <div class="checkbox-custom flex-shrink-0" id="cb-reading"></div>
+                </div>
+
+                <div class="flex items-center justify-between py-4" onclick="toggleTask('stretch')">
+                    <div class="pr-4">
+                        <p class="font-bold text-zinc-100 text-sm">Evening Reset</p>
+                        <p class="text-xs text-zinc-500 mt-0.5">Foam roll & Stretch</p>
+                    </div>
+                    <div class="checkbox-custom flex-shrink-0" id="cb-stretch"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Penalty Tracker -->
+        <section class="card p-6 mb-6 penalty-card">
+            <h2 class="text-base font-black text-red-400 mb-4 flex items-center uppercase tracking-widest">
+                <span class="mr-2 text-xl">⚡</span> Penalty Log
+            </h2>
+            <div class="text-[11px] text-red-200/70 space-y-2 mb-5 leading-relaxed">
+                <p><strong class="text-red-400">MISSED AM:</strong> 100/300 + 60m Evening</p>
+                <p><strong class="text-red-400">BROKE DIET:</strong> CLEAN BATHROOMS</p>
+            </div>
+            
+            <button id="btn-penalty" class="hold-btn w-full py-4 rounded-xl font-black text-sm uppercase tracking-widest shadow-lg">
+                <div id="hold-progress" class="hold-progress"></div>
+                <span class="relative z-10" id="penalty-btn-text">Hold to Log Penalty</span>
+            </button>
+            
+            <div id="penalty-count" class="mt-4 text-center text-[10px] font-black text-red-500 uppercase tracking-[0.2em] transition-all duration-300">
+                Active Penalties Paid: 0
+            </div>
+        </section>
+
+        <!-- Weigh-In -->
+        <section class="card p-6">
+            <h2 class="text-lg font-bold text-white mb-2 text-center uppercase tracking-wider">Weight Tracking</h2>
+            <p id="weigh-in-status" class="text-center text-[10px] mb-5 font-bold tracking-widest text-emerald-400">READY FOR ENTRY</p>
+            
+            <div class="flex gap-3 justify-center">
+                <div class="relative w-24">
+                    <input type="number" id="weight-input" placeholder="000" 
+                           class="w-full bg-zinc-900 border border-zinc-700 text-white p-3 rounded-xl text-center font-black focus:ring-2 focus:ring-emerald-500 outline-none transition-all">
+                    <span class="absolute -top-2 left-3 bg-zinc-800 text-[9px] px-1 text-zinc-400 font-bold uppercase">LBS</span>
+                </div>
+                <button onclick="saveWeight()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-black text-sm uppercase tracking-widest transition-all active:scale-95">
+                    Record
+                </button>
+            </div>
+
+            <div class="mt-8">
+                <h3 class="text-[10px] font-black text-zinc-500 uppercase mb-4 tracking-[0.15em] border-b border-zinc-800 pb-2">Progress History</h3>
+                <div id="weight-history" class="space-y-3"></div>
+            </div>
+        </section>
     </div>
+
     <script>
-        const celebrateButton = document.getElementById('celebrate');
-        celebrateButton.addEventListener('click', () => {
-            confetti();
-            alert('Congratulations on your wedding journey!');
-        });
+        const START_DATE = new Date("2026-04-06T00:00:00");
+        const TOTAL_TASKS_PER_DAY = 6;
+        const STORAGE_KEY = '75_focused_v5_prod'; 
+
+        let state = {
+            completedTasks: {}, 
+            penalties: 0,
+            weights: []
+        };
+
+        let holdTimer = null;
+        let holdStartTime = 0;
+        const HOLD_DURATION = 1500; 
+
+        window.onload = function() {
+            loadData();
+            updateDateUI();
+            renderWeightHistory();
+            refreshCheckboxes();
+            updatePerfectDaysCounter();
+            setupHoldButton();
+        };
+
+        function setupHoldButton() {
+            const btn = document.getElementById('btn-penalty');
+            const progress = document.getElementById('hold-progress');
+            const btnText = document.getElementById('penalty-btn-text');
+
+            const startHold = (e) => {
+                e.preventDefault();
+                holdStartTime = Date.now();
+                btnText.innerText = "Holding...";
+                
+                holdTimer = setInterval(() => {
+                    const elapsed = Date.now() - holdStartTime;
+                    const percent = Math.min((elapsed / HOLD_DURATION) * 100, 100);
+                    progress.style.width = percent + '%';
+
+                    if (elapsed >= HOLD_DURATION) {
+                        clearInterval(holdTimer);
+                        executePenaltyLog();
+                        endHold();
+                        btnText.innerText = "Logged!";
+                        setTimeout(() => btnText.innerText = "Hold to Log Penalty", 2000);
+                    }
+                }, 50);
+            };
+
+            const endHold = () => {
+                clearInterval(holdTimer);
+                progress.style.width = '0%';
+                if (btnText.innerText === "Holding...") {
+                    btnText.innerText = "Hold to Log Penalty";
+                }
+            };
+
+            btn.addEventListener('touchstart', startHold);
+            btn.addEventListener('touchend', endHold);
+            btn.addEventListener('touchcancel', endHold);
+            btn.addEventListener('mousedown', startHold);
+            btn.addEventListener('mouseup', endHold);
+            btn.addEventListener('mouseleave', endHold);
+        }
+
+        function triggerThumbsUp() {
+            const container = document.getElementById('thumbs-up-container');
+            const el = document.createElement('div');
+            el.className = 'thumbs-up-pop';
+            el.innerText = '👍';
+            container.appendChild(el);
+            
+            // Remove element after animation finishes
+            setTimeout(() => {
+                el.remove();
+            }, 800);
+        }
+
+        function triggerConfetti() {
+            const count = 200;
+            const defaults = {
+                origin: { y: 0.7 },
+                colors: ['#10b981', '#34d399', '#fbbf24', '#ffffff']
+            };
+
+            function fire(particleRatio, opts) {
+                confetti({
+                    ...defaults,
+                    ...opts,
+                    particleCount: Math.floor(count * particleRatio)
+                });
+            }
+
+            fire(0.25, { spread: 26, startVelocity: 55 });
+            fire(0.2, { spread: 60 });
+            fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
+            fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
+            fire(0.1, { spread: 120, startVelocity: 45 });
+        }
+
+        function updateDateUI() {
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            document.getElementById('current-date').innerText = today.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+            
+            let diffDays = 0;
+            if (today >= START_DATE) {
+                const diffTime = today.getTime() - START_DATE.getTime();
+                diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
+            }
+            document.getElementById('day-counter').innerText = diffDays > 0 ? diffDays : "Ready";
+
+            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const workouts = {
+                'Monday': 'T25 Alpha/Beta', 'Tuesday': '3-5 Mile Run / Elliptical',
+                'Wednesday': 'T25 Alpha/Beta', 'Thursday': 'Active Recovery Walk',
+                'Friday': 'T25 Alpha/Beta', 'Saturday': 'Hike / Mountain Bike',
+                'Sunday': 'Run / Mountain Bike'
+            };
+            document.getElementById('today-workout-desc').innerText = workouts[today.getDay()] || '30m Minimum Workout';
+        }
+
+        function updatePerfectDaysCounter(shouldCheckConfetti = false) {
+            let totalPerfectDays = 0;
+            const entries = Object.entries(state.completedTasks);
+            const todayKey = new Date().toLocaleDateString('sv-SE');
+            
+            entries.forEach(([date, tasks]) => {
+                if (tasks.length === TOTAL_TASKS_PER_DAY) totalPerfectDays++;
+            });
+
+            document.getElementById('perfect-days-count').innerText = totalPerfectDays;
+            
+            const chip = document.getElementById('perfect-days-chip');
+            const tasksToday = state.completedTasks[todayKey] || [];
+            
+            if (tasksToday.length === TOTAL_TASKS_PER_DAY) {
+                chip.className = 'transition-colors duration-300 bg-emerald-600 border border-emerald-500 text-white px-4 py-1.5 rounded-full font-bold text-[10px] tracking-widest uppercase';
+                if (shouldCheckConfetti) triggerConfetti();
+            } else {
+                chip.className = 'transition-colors duration-300 bg-zinc-800 border border-zinc-700 text-zinc-300 px-4 py-1.5 rounded-full font-bold text-[10px] tracking-widest uppercase';
+            }
+            
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            if (today >= START_DATE) {
+                const diffTime = today.getTime() - START_DATE.getTime();
+                const daysElapsed = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
+                const rate = Math.round((totalPerfectDays / daysElapsed) * 100);
+                document.getElementById('consistency-rate').innerText = `${rate || 0}%`;
+            }
+        }
+
+        function toggleTask(taskId) {
+            const el = document.getElementById('cb-' + taskId);
+            const todayKey = new Date().toLocaleDateString('sv-SE'); 
+            if (!state.completedTasks[todayKey]) state.completedTasks[todayKey] = [];
+            
+            let wasChecked = el.classList.contains('checked');
+            
+            if (!wasChecked) {
+                el.classList.add('checked');
+                if (!state.completedTasks[todayKey].includes(taskId)) state.completedTasks[todayKey].push(taskId);
+                // Trigger the thumbs up on every check
+                triggerThumbsUp();
+            } else {
+                el.classList.remove('checked');
+                state.completedTasks[todayKey] = state.completedTasks[todayKey].filter(id => id !== taskId);
+            }
+            
+            saveData();
+            updatePerfectDaysCounter(!wasChecked);
+        }
+
+        function executePenaltyLog() {
+            state.penalties = (parseInt(state.penalties) || 0) + 1;
+            const counterDisplay = document.getElementById('penalty-count');
+            counterDisplay.innerText = `Active Penalties Paid: ${state.penalties}`;
+            counterDisplay.classList.add('success-pulse');
+            setTimeout(() => counterDisplay.classList.remove('success-pulse'), 600);
+            saveData();
+        }
+
+        function refreshCheckboxes() {
+            const todayKey = new Date().toLocaleDateString('sv-SE');
+            const completedToday = state.completedTasks[todayKey] || [];
+            document.querySelectorAll('.checkbox-custom').forEach(cb => {
+                const id = cb.id.replace('cb-', '');
+                if (completedToday.includes(id)) cb.classList.add('checked');
+                else cb.classList.remove('checked');
+            });
+        }
+
+        function saveWeight() {
+            const input = document.getElementById('weight-input');
+            const val = parseFloat(input.value);
+            if (val) {
+                state.weights.unshift({ date: new Date().toLocaleDateString(), weight: val });
+                input.value = '';
+                renderWeightHistory();
+                saveData();
+            }
+        }
+
+        function renderWeightHistory() {
+            const container = document.getElementById('weight-history');
+            if (!state.weights || state.weights.length === 0) {
+                container.innerHTML = `<p class="text-center text-zinc-600 text-[10px] py-4 uppercase font-bold tracking-widest">No history yet</p>`;
+                return;
+            }
+            container.innerHTML = state.weights.slice(0, 5).map(w => `
+                <div class="flex justify-between items-center text-xs p-3 bg-zinc-900/50 border border-zinc-800 rounded-xl">
+                    <span class="text-zinc-500 font-bold">${w.date}</span>
+                    <span class="font-black text-white">${w.weight} <span class="text-[10px] text-zinc-500">LBS</span></span>
+                </div>
+            `).join('');
+        }
+
+        function saveData() { 
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); 
+        }
+
+        function loadData() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                state = {
+                    completedTasks: parsed.completedTasks || {},
+                    penalties: parsed.penalties || 0,
+                    weights: parsed.weights || []
+                };
+                document.getElementById('penalty-count').innerText = `Active Penalties Paid: ${state.penalties}`;
+            }
+        }
     </script>
 </body>
 </html>
