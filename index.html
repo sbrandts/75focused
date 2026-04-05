@@ -23,9 +23,9 @@
             position: relative;
         }
         .checkbox-custom { 
-            width: 1.75rem; 
-            height: 1.75rem; 
-            border-radius: 0.5rem; 
+            width: 2rem; 
+            height: 2rem; 
+            border-radius: 0.6rem; 
             border: 2px solid #3f3f46; 
             cursor: pointer; 
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
@@ -45,7 +45,7 @@
             top: 50%; 
             transform: translate(-50%, -50%); 
             font-weight: bold; 
-            font-size: 1rem;
+            font-size: 1.2rem;
         }
         .penalty-card { 
             background: linear-gradient(145deg, #450a0a, #18181b);
@@ -69,12 +69,12 @@
         }
         .day-row {
             border-bottom: 1px solid #27272a;
-            padding: 1rem 0;
+            padding: 0.85rem 0; /* Condensed vertical padding */
         }
         .day-row.today {
-            border-left: 3px solid #10b981;
+            border-left: 4px solid #10b981;
             padding-left: 1rem;
-            background: linear-gradient(90deg, rgba(16, 185, 129, 0.05), transparent);
+            background: linear-gradient(90deg, rgba(16, 185, 129, 0.08), transparent);
         }
 
         /* Hold to Confirm Button */
@@ -139,27 +139,27 @@
 
     <!-- Workout Plan Overlay -->
     <div id="workout-overlay">
-        <div class="flex justify-between items-center mb-8">
+        <div class="flex justify-between items-center mb-6">
             <h2 class="text-2xl font-black text-white uppercase tracking-tighter">Weekly Plan</h2>
             <button onclick="toggleWorkoutOverlay()" class="w-10 h-10 flex items-center justify-center bg-zinc-800 rounded-full border border-zinc-700">
                 <span class="text-xl font-bold text-zinc-400">✕</span>
             </button>
         </div>
-        <div id="workout-list" class="space-y-1 overflow-y-auto pr-2">
+        <div id="workout-list" class="space-y-0.5 overflow-y-auto pr-2">
             <!-- Populated by JS -->
         </div>
-        <button onclick="toggleWorkoutOverlay()" class="mt-auto w-full py-4 bg-zinc-800 border border-zinc-700 rounded-xl font-black text-xs uppercase tracking-[0.2em] text-zinc-400">
+        <button onclick="toggleWorkoutOverlay()" class="mt-4 w-full py-4 bg-zinc-800 border border-zinc-700 rounded-2xl font-black text-sm uppercase tracking-[0.2em] text-zinc-200">
             Return to Dashboard
         </button>
     </div>
 
-    <div class="max-w-md mx-auto px-5 pt-10">
+    <div class="max-w-md mx-auto px-5 pt-8">
         <!-- Header -->
-        <header class="mb-6 text-center">
-            <h1 class="text-4xl font-extrabold tracking-tight text-white mb-1">75 Focused</h1>
-            <p class="text-zinc-400 font-medium tracking-wide">Wedding Readiness • June 20th</p>
+        <header class="mb-5 text-center">
+            <h1 class="text-4xl font-extrabold tracking-tight text-white mb-0.5">75 Focused</h1>
+            <p class="text-zinc-400 font-medium tracking-wide text-sm">Wedding Readiness • June 20th</p>
             
-            <div class="flex justify-center gap-3 mt-5">
+            <div class="flex justify-center gap-3 mt-4">
                 <div class="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-4 py-1.5 rounded-full font-bold text-[10px] tracking-widest uppercase">
                     Day <span id="day-counter">--</span>
                 </div>
@@ -174,57 +174,63 @@
         </header>
 
         <!-- Daily Checklist -->
-        <section class="card p-6 mb-4">
-            <div class="flex justify-between items-end mb-6">
-                <h2 class="text-xl font-bold text-white">Daily Tasks</h2>
-                <span id="current-date" class="text-xs font-bold text-white uppercase tracking-tighter"></span>
+        <section class="card p-5 mb-4">
+            <div class="flex justify-between items-end mb-3 border-b border-zinc-800/80 pb-3">
+                <h2 class="text-lg font-bold text-white uppercase tracking-tighter">Daily Tasks</h2>
+                <span id="current-date" class="text-[9px] font-black text-zinc-500 uppercase tracking-widest"></span>
             </div>
             
-            <div id="checklist" class="space-y-1">
-                <div class="flex items-center justify-between py-4 border-b border-zinc-800/50" onclick="toggleTask('morning_movement')">
+            <div id="checklist" class="space-y-0.5">
+                <!-- Task 1 -->
+                <div class="flex items-center justify-between py-3 border-b border-zinc-800/40" onclick="toggleTask('morning_movement')">
                     <div class="pr-4">
-                        <p class="font-bold text-zinc-100 text-sm">Morning Movement</p>
-                        <p class="text-xs text-zinc-500 mt-0.5">50 Push-ups / 150 Abs</p>
+                        <p class="font-bold text-white text-base leading-tight">Morning Movement</p>
+                        <p class="text-[11px] text-zinc-500 mt-0.5 uppercase tracking-wider font-semibold">50 Push-ups / 150 Abs</p>
                     </div>
                     <div class="checkbox-custom flex-shrink-0" id="cb-morning_movement"></div>
                 </div>
 
-                <div class="flex items-center justify-between py-4 border-b border-zinc-800/50" onclick="toggleTask('workout')">
+                <!-- Task 2 -->
+                <div class="flex items-center justify-between py-3 border-b border-zinc-800/40" onclick="toggleTask('workout')">
                     <div class="pr-4">
-                        <p class="font-bold text-zinc-100 text-sm">Daily Workout</p>
-                        <p class="text-xs text-zinc-500 mt-0.5" id="today-workout-desc">30 min minimum</p>
+                        <p class="font-bold text-white text-base leading-tight">Daily Workout</p>
+                        <p class="text-[11px] text-zinc-500 mt-0.5 uppercase tracking-wider font-semibold" id="today-workout-desc">30 min minimum</p>
                     </div>
                     <div class="checkbox-custom flex-shrink-0" id="cb-workout"></div>
                 </div>
 
-                <div class="flex items-center justify-between py-4 border-b border-zinc-800/50" onclick="toggleTask('nutrition')">
+                <!-- Task 3 -->
+                <div class="flex items-center justify-between py-3 border-b border-zinc-800/40" onclick="toggleTask('nutrition')">
                     <div class="pr-4">
-                        <p class="font-bold text-zinc-100 text-sm">Clean Fuel Protocol</p>
-                        <p class="text-xs text-zinc-500 mt-0.5">11-7 window • No Junk/Alcohol</p>
+                        <p class="font-bold text-white text-base leading-tight">Clean Fuel Protocol</p>
+                        <p class="text-[11px] text-zinc-500 mt-0.5 uppercase tracking-wider font-semibold">11-7 window • No Junk/Alcohol</p>
                     </div>
                     <div class="checkbox-custom flex-shrink-0" id="cb-nutrition"></div>
                 </div>
 
-                <div class="flex items-center justify-between py-4 border-b border-zinc-800/50" onclick="toggleTask('water')">
+                <!-- Task 4 -->
+                <div class="flex items-center justify-between py-3 border-b border-zinc-800/40" onclick="toggleTask('water')">
                     <div class="pr-4">
-                        <p class="font-bold text-zinc-100 text-sm">Gallon & Green Tea</p>
-                        <p class="text-xs text-zinc-500 mt-0.5">Full hydration goal</p>
+                        <p class="font-bold text-white text-base leading-tight">Gallon & Green Tea</p>
+                        <p class="text-[11px] text-zinc-500 mt-0.5 uppercase tracking-wider font-semibold">Full hydration goal</p>
                     </div>
                     <div class="checkbox-custom flex-shrink-0" id="cb-water"></div>
                 </div>
 
-                <div class="flex items-center justify-between py-4 border-b border-zinc-800/50" onclick="toggleTask('reading')">
+                <!-- Task 5 -->
+                <div class="flex items-center justify-between py-3 border-b border-zinc-800/40" onclick="toggleTask('reading')">
                     <div class="pr-4">
-                        <p class="font-bold text-zinc-100 text-sm">Mental Growth</p>
-                        <p class="text-xs text-zinc-500 mt-0.5">10 pages (No technology)</p>
+                        <p class="font-bold text-white text-base leading-tight">Mental Growth</p>
+                        <p class="text-[11px] text-zinc-500 mt-0.5 uppercase tracking-wider font-semibold">10 pages (No tech)</p>
                     </div>
                     <div class="checkbox-custom flex-shrink-0" id="cb-reading"></div>
                 </div>
 
-                <div class="flex items-center justify-between py-4" onclick="toggleTask('stretch')">
+                <!-- Task 6 -->
+                <div class="flex items-center justify-between py-3" onclick="toggleTask('stretch')">
                     <div class="pr-4">
-                        <p class="font-bold text-zinc-100 text-sm">Evening Reset</p>
-                        <p class="text-xs text-zinc-500 mt-0.5">Foam roll & Stretch</p>
+                        <p class="font-bold text-white text-base leading-tight">Evening Reset</p>
+                        <p class="text-[11px] text-zinc-500 mt-0.5 uppercase tracking-wider font-semibold">Foam roll & Stretch</p>
                     </div>
                     <div class="checkbox-custom flex-shrink-0" id="cb-stretch"></div>
                 </div>
@@ -232,56 +238,56 @@
         </section>
 
         <!-- Workout Plan Button -->
-        <button onclick="toggleWorkoutOverlay()" class="w-full mb-6 p-4 rounded-2xl bg-zinc-800 border border-zinc-700 flex items-center justify-between hover:bg-zinc-700 transition-colors active:scale-95 group">
+        <button onclick="toggleWorkoutOverlay()" class="w-full mb-4 p-4 rounded-2xl bg-zinc-800/50 border border-zinc-700 flex items-center justify-between hover:bg-zinc-700 transition-colors active:scale-95 group">
             <div class="flex items-center">
-                <span class="text-xl mr-3">🗓️</span>
+                <span class="text-xl mr-4">🗓️</span>
                 <div class="text-left">
                     <p class="text-sm font-black text-white uppercase tracking-wider">Weekly Workout Plan</p>
-                    <p class="text-[10px] text-zinc-500 font-bold uppercase tracking-tight">Tap to view your full schedule</p>
+                    <p class="text-[9px] text-zinc-500 font-bold uppercase tracking-tight">Full Schedule Overview</p>
                 </div>
             </div>
-            <span class="text-zinc-600 group-hover:text-zinc-400">➔</span>
+            <span class="text-zinc-600 group-hover:text-zinc-400 text-sm">➔</span>
         </button>
 
         <!-- Penalty Tracker -->
-        <section class="card p-6 mb-6 penalty-card">
-            <h2 class="text-base font-black text-red-400 mb-4 flex items-center uppercase tracking-widest">
-                <span class="mr-2 text-xl">⚡</span> Penalty Log
+        <section class="card p-5 mb-4 penalty-card">
+            <h2 class="text-sm font-black text-red-400 mb-3 flex items-center uppercase tracking-widest">
+                <span class="mr-2 text-lg">⚡</span> Penalty Log
             </h2>
-            <div class="text-[11px] text-red-200/70 space-y-2 mb-5 leading-relaxed">
+            <div class="text-[10px] text-red-200/70 space-y-1.5 mb-4 leading-relaxed">
                 <p><strong class="text-red-400">MISSED AM:</strong> 100/300 + 60m Evening</p>
                 <p><strong class="text-red-400">BROKE DIET:</strong> Clean Bathrooms</p>
             </div>
             
-            <button id="btn-penalty" class="hold-btn w-full py-4 rounded-xl font-black text-sm uppercase tracking-widest shadow-lg">
+            <button id="btn-penalty" class="hold-btn w-full py-3.5 rounded-xl font-black text-xs uppercase tracking-widest shadow-lg">
                 <div id="hold-progress" class="hold-progress"></div>
                 <span class="relative z-10" id="penalty-btn-text">Hold to Log Penalty</span>
             </button>
             
-            <div id="penalty-count" class="mt-4 text-center text-[10px] font-black text-red-500 uppercase tracking-[0.2em] transition-all duration-300">
+            <div id="penalty-count" class="mt-3 text-center text-[9px] font-black text-red-500 uppercase tracking-[0.2em] transition-all duration-300">
                 Active Penalties Paid: 0
             </div>
         </section>
 
         <!-- Weigh-In -->
-        <section class="card p-6">
-            <h2 class="text-lg font-bold text-white mb-2 text-center uppercase tracking-wider">Weight Tracking</h2>
-            <p id="weigh-in-status" class="text-center text-[10px] mb-5 font-bold tracking-widest text-emerald-400">READY FOR ENTRY</p>
+        <section class="card p-5">
+            <h2 class="text-base font-bold text-white mb-2 text-center uppercase tracking-wider">Weight Tracking</h2>
+            <p id="weigh-in-status" class="text-center text-[9px] mb-4 font-bold tracking-widest text-emerald-400">READY FOR ENTRY</p>
             
-            <div class="flex gap-3 justify-center">
+            <div class="flex gap-2.5 justify-center">
                 <div class="relative w-24">
                     <input type="number" id="weight-input" placeholder="000" 
-                           class="w-full bg-zinc-900 border border-zinc-700 text-white p-3 rounded-xl text-center font-black focus:ring-2 focus:ring-emerald-500 outline-none transition-all">
-                    <span class="absolute -top-2 left-3 bg-zinc-800 text-[9px] px-1 text-zinc-400 font-bold uppercase">LBS</span>
+                           class="w-full bg-zinc-900 border border-zinc-700 text-white p-2.5 rounded-xl text-center font-black focus:ring-2 focus:ring-emerald-500 outline-none transition-all text-sm">
+                    <span class="absolute -top-2 left-3 bg-zinc-800 text-[8px] px-1 text-zinc-400 font-bold uppercase">LBS</span>
                 </div>
-                <button onclick="saveWeight()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-black text-sm uppercase tracking-widest transition-all active:scale-95">
+                <button onclick="saveWeight()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-black text-xs uppercase tracking-widest transition-all active:scale-95">
                     Record
                 </button>
             </div>
 
-            <div class="mt-8">
-                <h3 class="text-[10px] font-black text-zinc-500 uppercase mb-4 tracking-[0.15em] border-b border-zinc-800 pb-2">Progress History</h3>
-                <div id="weight-history" class="space-y-3"></div>
+            <div class="mt-6">
+                <h3 class="text-[9px] font-black text-zinc-500 uppercase mb-3 tracking-[0.15em] border-b border-zinc-800/80 pb-2">Progress History</h3>
+                <div id="weight-history" class="space-y-2"></div>
             </div>
         </section>
     </div>
@@ -324,7 +330,6 @@
         function toggleWorkoutOverlay() {
             const overlay = document.getElementById('workout-overlay');
             overlay.classList.toggle('active');
-            // Prevent body scroll when overlay is open
             document.body.style.overflow = overlay.classList.contains('active') ? 'hidden' : '';
         }
 
@@ -338,11 +343,11 @@
                 return `
                     <div class="day-row ${isToday ? 'today' : ''}">
                         <div class="flex justify-between items-center mb-1">
-                            <span class="text-[10px] font-black uppercase tracking-[0.2em] ${isToday ? 'text-emerald-500' : 'text-zinc-500'}">
+                            <span class="text-[10px] font-black uppercase tracking-[0.2em] ${isToday ? 'text-emerald-400' : 'text-zinc-500'}">
                                 ${day} ${isToday ? '• Today' : ''}
                             </span>
                         </div>
-                        <p class="text-sm font-bold ${isToday ? 'text-white' : 'text-zinc-300'}">${WORKOUT_PLAN[day]}</p>
+                        <p class="text-lg font-bold ${isToday ? 'text-white' : 'text-zinc-300'} leading-tight">${WORKOUT_PLAN[day]}</p>
                     </div>
                 `;
             }).join('');
@@ -354,7 +359,7 @@
             const btnText = document.getElementById('penalty-btn-text');
 
             const startHold = (e) => {
-                e.preventDefault();
+                if (e.cancelable) e.preventDefault();
                 holdStartTime = Date.now();
                 btnText.innerText = "Holding...";
                 
@@ -527,9 +532,9 @@
                 return;
             }
             container.innerHTML = state.weights.slice(0, 5).map(w => `
-                <div class="flex justify-between items-center text-xs p-3 bg-zinc-900/50 border border-zinc-800 rounded-xl">
-                    <span class="text-zinc-500 font-bold">${w.date}</span>
-                    <span class="font-black text-white">${w.weight} <span class="text-[10px] text-zinc-500">LBS</span></span>
+                <div class="flex justify-between items-center text-[11px] p-2.5 bg-zinc-900/50 border border-zinc-800 rounded-xl">
+                    <span class="text-zinc-500 font-bold uppercase tracking-tight">${w.date}</span>
+                    <span class="font-black text-white">${w.weight} <span class="text-[9px] text-zinc-500">LBS</span></span>
                 </div>
             `).join('');
         }
