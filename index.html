@@ -53,8 +53,8 @@
             overflow: hidden;
         }
         
-        /* Workout Overlay Styles */
-        #workout-overlay {
+        /* Overlay Styles */
+        .modal-overlay {
             position: fixed;
             inset: 0;
             background: rgba(9, 9, 11, 0.95);
@@ -64,12 +64,12 @@
             flex-direction: column;
             padding: 2rem 1.25rem;
         }
-        #workout-overlay.active {
+        .modal-overlay.active {
             display: flex;
         }
-        .day-row {
+        .day-row, .meal-row {
             border-bottom: 1px solid #27272a;
-            padding: 0.85rem 0; /* Condensed vertical padding */
+            padding: 0.85rem 0;
         }
         .day-row.today {
             border-left: 4px solid #10b981;
@@ -138,17 +138,47 @@
     <div id="thumbs-up-container"></div>
 
     <!-- Workout Plan Overlay -->
-    <div id="workout-overlay">
+    <div id="workout-overlay" class="modal-overlay">
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-2xl font-black text-white uppercase tracking-tighter">Weekly Plan</h2>
-            <button onclick="toggleWorkoutOverlay()" class="w-10 h-10 flex items-center justify-center bg-zinc-800 rounded-full border border-zinc-700">
+            <button onclick="toggleOverlay('workout-overlay')" class="w-10 h-10 flex items-center justify-center bg-zinc-800 rounded-full border border-zinc-700">
                 <span class="text-xl font-bold text-zinc-400">✕</span>
             </button>
         </div>
         <div id="workout-list" class="space-y-0.5 overflow-y-auto pr-2">
             <!-- Populated by JS -->
         </div>
-        <button onclick="toggleWorkoutOverlay()" class="mt-4 w-full py-4 bg-zinc-800 border border-zinc-700 rounded-2xl font-black text-sm uppercase tracking-[0.2em] text-zinc-200">
+        <button onclick="toggleOverlay('workout-overlay')" class="mt-4 w-full py-4 bg-zinc-800 border border-zinc-700 rounded-2xl font-black text-sm uppercase tracking-[0.2em] text-zinc-200">
+            Return to Dashboard
+        </button>
+    </div>
+
+    <!-- Nutrition Overlay -->
+    <div id="nutrition-overlay" class="modal-overlay">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-black text-white uppercase tracking-tighter">Nutrition Strategy</h2>
+            <button onclick="toggleOverlay('nutrition-overlay')" class="w-10 h-10 flex items-center justify-center bg-zinc-800 rounded-full border border-zinc-700">
+                <span class="text-xl font-bold text-zinc-400">✕</span>
+            </button>
+        </div>
+        <div class="space-y-4 overflow-y-auto pr-2">
+            <div class="meal-row">
+                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-400 mb-1">Break Fast • 11:00 AM</p>
+                <p class="text-lg font-bold text-white leading-tight">The "Convenience" Smoothie</p>
+                <p class="text-sm text-zinc-400 mt-2">Nutribullet with spinach, frozen berries, protein powder, and water or unsweetened almond milk.</p>
+            </div>
+            <div class="meal-row">
+                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-400 mb-1">High-Fuel Lunch</p>
+                <p class="text-lg font-bold text-white leading-tight">The "Workday Lunch"</p>
+                <p class="text-sm text-zinc-400 mt-2">Giant salad (Pre-cooked Chicken + 2 Hard-boiled Eggs + Avocado + Walnuts).</p>
+            </div>
+            <div class="meal-row">
+                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-400 mb-1">Simple Reward • Prep < 15m</p>
+                <p class="text-lg font-bold text-white leading-tight">The "Reward" Dinner</p>
+                <p class="text-sm text-zinc-400 mt-2">Salmon, Lean Beef, or Ground Turkey with double roasted vegetables.</p>
+            </div>
+        </div>
+        <button onclick="toggleOverlay('nutrition-overlay')" class="mt-auto w-full py-4 bg-zinc-800 border border-zinc-700 rounded-2xl font-black text-sm uppercase tracking-[0.2em] text-zinc-200">
             Return to Dashboard
         </button>
     </div>
@@ -238,12 +268,24 @@
         </section>
 
         <!-- Workout Plan Button -->
-        <button onclick="toggleWorkoutOverlay()" class="w-full mb-4 p-4 rounded-2xl bg-zinc-800/50 border border-zinc-700 flex items-center justify-between hover:bg-zinc-700 transition-colors active:scale-95 group">
+        <button onclick="toggleOverlay('workout-overlay')" class="w-full mb-2 p-4 rounded-2xl bg-zinc-800/50 border border-zinc-700 flex items-center justify-between hover:bg-zinc-700 transition-colors active:scale-95 group">
             <div class="flex items-center">
                 <span class="text-xl mr-4">🗓️</span>
                 <div class="text-left">
                     <p class="text-sm font-black text-white uppercase tracking-wider">Weekly Workout Plan</p>
                     <p class="text-[9px] text-zinc-500 font-bold uppercase tracking-tight">Full Schedule Overview</p>
+                </div>
+            </div>
+            <span class="text-zinc-600 group-hover:text-zinc-400 text-sm">➔</span>
+        </button>
+
+        <!-- Nutrition Strategy Button -->
+        <button onclick="toggleOverlay('nutrition-overlay')" class="w-full mb-4 p-4 rounded-2xl bg-zinc-800/50 border border-zinc-700 flex items-center justify-between hover:bg-zinc-700 transition-colors active:scale-95 group">
+            <div class="flex items-center">
+                <span class="text-xl mr-4">🥗</span>
+                <div class="text-left">
+                    <p class="text-sm font-black text-white uppercase tracking-wider">Nutrition Strategy</p>
+                    <p class="text-[9px] text-zinc-500 font-bold uppercase tracking-tight">Quick & Simple Meals</p>
                 </div>
             </div>
             <span class="text-zinc-600 group-hover:text-zinc-400 text-sm">➔</span>
@@ -327,8 +369,8 @@
             renderWorkoutPlan();
         };
 
-        function toggleWorkoutOverlay() {
-            const overlay = document.getElementById('workout-overlay');
+        function toggleOverlay(id) {
+            const overlay = document.getElementById(id);
             overlay.classList.toggle('active');
             document.body.style.overflow = overlay.classList.contains('active') ? 'hidden' : '';
         }
