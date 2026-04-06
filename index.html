@@ -314,7 +314,21 @@
         <!-- Weigh-In -->
         <section class="card p-5">
             <h2 class="text-base font-bold text-white mb-2 text-center uppercase tracking-wider">Weight Tracking</h2>
-            <p id="weigh-in-status" class="text-center text-[9px] mb-4 font-bold tracking-widest text-emerald-400">READY FOR ENTRY</p>
+            
+            <!-- Progress Bar / Percentage -->
+            <div class="mb-5 px-1">
+                <div class="flex justify-between items-end mb-1.5">
+                    <p class="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Goal Progress</p>
+                    <p id="goal-percent" class="text-lg font-black text-emerald-400 tracking-tighter">0%</p>
+                </div>
+                <div class="w-full h-2 bg-zinc-900 rounded-full overflow-hidden border border-zinc-800">
+                    <div id="goal-progress-bar" class="h-full bg-emerald-500 transition-all duration-1000 ease-out" style="width: 0%"></div>
+                </div>
+                <div class="flex justify-between mt-1 text-[9px] font-bold text-zinc-600 uppercase tracking-tighter">
+                    <span>Start: 185</span>
+                    <span>Target: 165</span>
+                </div>
+            </div>
             
             <div class="flex gap-2.5 justify-center">
                 <div class="relative w-24">
@@ -338,6 +352,8 @@
         const START_DATE = new Date("2026-04-06T00:00:00");
         const TOTAL_TASKS_PER_DAY = 6;
         const STORAGE_KEY = '75_focused_v5_prod'; 
+        const START_WEIGHT = 185;
+        const TARGET_WEIGHT = 165;
 
         const WORKOUT_PLAN = {
             'Monday': 'T25 Alpha/Beta (Full Speed Focus)',
@@ -367,6 +383,7 @@
             updatePerfectDaysCounter();
             setupHoldButton();
             renderWorkoutPlan();
+            updateGoalProgress();
         };
 
         function toggleOverlay(id) {
@@ -517,6 +534,24 @@
             }
         }
 
+        function updateGoalProgress() {
+            if (!state.weights || state.weights.length === 0) {
+                document.getElementById('goal-percent').innerText = "0%";
+                document.getElementById('goal-progress-bar').style.width = "0%";
+                return;
+            }
+            
+            const currentWeight = state.weights[0].weight;
+            const totalToLose = START_WEIGHT - TARGET_WEIGHT;
+            const currentlyLost = START_WEIGHT - currentWeight;
+            
+            let percent = Math.round((currentlyLost / totalToLose) * 100);
+            percent = Math.max(0, Math.min(percent, 100)); // Clamp between 0-100
+            
+            document.getElementById('goal-percent').innerText = `${percent}%`;
+            document.getElementById('goal-progress-bar').style.width = `${percent}%`;
+        }
+
         function toggleTask(taskId) {
             const el = document.getElementById('cb-' + taskId);
             const todayKey = new Date().toLocaleDateString('sv-SE'); 
@@ -563,6 +598,7 @@
                 state.weights.unshift({ date: new Date().toLocaleDateString(), weight: val });
                 input.value = '';
                 renderWeightHistory();
+                updateGoalProgress();
                 saveData();
             }
         }
